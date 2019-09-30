@@ -138,7 +138,17 @@ public class CollectionStage_third extends BaseFragment implements OnItemResultC
 
                     sampleEntityView = sampleEntity;
 
-                    result_list = sampleEntity.getResultCapture_list();
+                    if (sampleEntityView.getResultCapture_list() !=  null){
+                        result_list = sampleEntity.getResultCapture_list();
+                    }else {
+                        for (int i=0;i<sampleEntityView.getFishtypes().size();i++){
+
+                            ResultCapturePojo result_pojo = new ResultCapturePojo();
+                            result_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
+
+                            result_list.add(result_pojo);
+                        }
+                    }
 
                     adapter = new ResultCaptureAdapter(getActivity(),result_list);
                     adapter.setOnItemResultClickListner(CollectionStage_third.this::onItemResultClicked);

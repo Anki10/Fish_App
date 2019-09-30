@@ -66,14 +66,14 @@ import butterknife.OnClick;
 
 public class CollectionStage_second extends BaseFragment implements OnItemImageClickListner {
 
-    TextView tv_title,tv_count;
+    TextView tv_title, tv_count;
 
     private static final String CAMERA_DIR = "/dcim/";
     private Uri picUri;
     private File imageF;
 
 
-    private String imagepath_1,imagepath_2,imagepath_3;
+    private String imagepath_1, imagepath_2, imagepath_3;
 
     @BindView(R.id.btn_Image_submit)
     Button btn_Image_submit;
@@ -96,10 +96,7 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
 
     private ImageCaptureAdapter adapter;
 
-
     private SampleListViewModel sampleListViewModel;
-
-
 
     private int list_pos;
 
@@ -119,9 +116,16 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
         click_type = getArguments().getString("click_type");
 
 
-        if (click_type.equalsIgnoreCase("first")){
-            getMainList();
-        }else {
+        if (click_type.equalsIgnoreCase("first")) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getMainList();
+                }
+            }, 3000);
+
+        } else {
             SampleGetData(local_id);
         }
 
@@ -138,33 +142,32 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
         recycler_image_capture.setLayoutManager(mLayoutManager);
 
 
-
         return view;
 
     }
 
     @OnClick({R.id.btn_Image_submit})
-    public void onViewClicked(View view){
-     switch (view.getId()){
-         case R.id.btn_Image_submit:
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btn_Image_submit:
 
 
-             sampleEntityView.setImageCapture_list(imageCapture_list);
+                sampleEntityView.setImageCapture_list(imageCapture_list);
 
-             sampleListViewModel.UpdateSample(sampleEntityView);
+                sampleListViewModel.UpdateSample(sampleEntityView);
 
-             CollectionStage_third stage_third = new CollectionStage_third();
-             FragmentTransaction ft = getFragmentManager().beginTransaction();
-             Bundle bundle = new Bundle();
-             bundle.putInt("local_id",local_id);
-             bundle.putString("click_type",click_type);
-             stage_third.setArguments(bundle);
-             ft.replace(R.id.frame_layout,stage_third,"newFragment");
-             ft.addToBackStack("my_fragment");
-             ft.commit();
+                CollectionStage_third stage_third = new CollectionStage_third();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                Bundle bundle = new Bundle();
+                bundle.putInt("local_id", local_id);
+                bundle.putString("click_type", click_type);
+                stage_third.setArguments(bundle);
+                ft.replace(R.id.frame_layout, stage_third, "newFragment");
+                ft.addToBackStack("my_fragment");
+                ft.commit();
 
-             break;
-      }
+                break;
+        }
     }
 
 
@@ -229,13 +232,12 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                     ImageCapturePojo image_pojo = imageCapture_list.get(list_pos);
                     image_pojo.setLocal_image_path1(imagepath_1);
 
-                    imageCapture_list.set(list_pos,image_pojo);
+                    imageCapture_list.set(list_pos, image_pojo);
 
                     adapter.notifyDataSetChanged();
 
                 }
-            }
-            else if (requestCode == 2) {
+            } else if (requestCode == 2) {
                 if (picUri != null) {
                     Uri uri = picUri;
                     imagepath_2 = compressImage(uri.toString());
@@ -243,13 +245,12 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                     ImageCapturePojo image_pojo2 = imageCapture_list.get(list_pos);
                     image_pojo2.setLocal_image_path2(imagepath_2);
 
-                    imageCapture_list.set(list_pos,image_pojo2);
+                    imageCapture_list.set(list_pos, image_pojo2);
 
                     adapter.notifyDataSetChanged();
                 }
 
-            }
-            else if (requestCode == 3) {
+            } else if (requestCode == 3) {
                 if (picUri != null) {
                     Uri uri = picUri;
                     imagepath_3 = compressImage(uri.toString());
@@ -257,7 +258,7 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                     ImageCapturePojo image_pojo3 = imageCapture_list.get(list_pos);
                     image_pojo3.setLocal_image_path3(imagepath_3);
 
-                    imageCapture_list.set(list_pos,image_pojo3);
+                    imageCapture_list.set(list_pos, image_pojo3);
 
                     adapter.notifyDataSetChanged();
 
@@ -267,22 +268,32 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
     }
 
 
-    private void SampleGetData(int localSampleId){
+    private void SampleGetData(int localSampleId) {
 
-        com.qci.fish.viewModel.SampleModel.Factory factory = new SampleModel.Factory(getActivity().getApplication(),localSampleId);
+        com.qci.fish.viewModel.SampleModel.Factory factory = new SampleModel.Factory(getActivity().getApplication(), localSampleId);
 
 
-        SampleModel = new ViewModelProvider(this,factory).get(com.qci.fish.viewModel.SampleModel.class);
+        SampleModel = new ViewModelProvider(this, factory).get(com.qci.fish.viewModel.SampleModel.class);
 
         SampleModel.getObservableSample().observe(this, new Observer<SampleEntity>() {
             @Override
             public void onChanged(SampleEntity sampleEntity) {
-                if (sampleEntity != null){
+                if (sampleEntity != null) {
                     sampleEntityView = sampleEntity;
 
-                    imageCapture_list = sampleEntityView.getImageCapture_list();
+                    if (sampleEntity.getImageCapture_list() != null) {
+                        imageCapture_list = sampleEntityView.getImageCapture_list();
+                    } else {
+                        for (int i = 0; i < sampleEntityView.getFishtypes().size(); i++) {
 
-                    adapter = new ImageCaptureAdapter(getActivity(),imageCapture_list);
+                            ImageCapturePojo image_pojo = new ImageCapturePojo();
+                            image_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
+
+                            imageCapture_list.add(image_pojo);
+
+                        }
+                    }
+                    adapter = new ImageCaptureAdapter(getActivity(), imageCapture_list);
                     adapter.setOnItemClickListener(CollectionStage_second.this::onItemImageClicked);
                     recycler_image_capture.setAdapter(adapter);
                 }
@@ -293,24 +304,24 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
     @Override
     public void onItemImageClicked(int from, int pos) {
         list_pos = pos;
-        if (from == 1){
+        if (from == 1) {
             captureImage(1);
-        }else if(from == 2){
-            if (imageCapture_list.get(list_pos).getLocal_image_path1() != null){
+        } else if (from == 2) {
+            if (imageCapture_list.get(list_pos).getLocal_image_path1() != null) {
                 captureImage(2);
-            }else {
-                Toast.makeText(getActivity(),"Please Capture first image before capture second image ",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getActivity(), "Please Capture first image before capture second image ", Toast.LENGTH_LONG).show();
             }
-        }else if (from == 3){
-            if (imageCapture_list.get(list_pos).getLocal_image_path1() != null && imageCapture_list.get(list_pos).getLocal_image_path2() != null){
+        } else if (from == 3) {
+            if (imageCapture_list.get(list_pos).getLocal_image_path1() != null && imageCapture_list.get(list_pos).getLocal_image_path2() != null) {
                 captureImage(3);
-            }else {
-                Toast.makeText(getActivity(),"Please Capture first and second image before capture third image ",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getActivity(), "Please Capture first and second image before capture third image ", Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void getMainList(){
+    private void getMainList() {
 
         Observer<List<SampleEntity>> sampleObserver = new Observer<List<SampleEntity>>() {
             @Override
@@ -318,40 +329,29 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                 sample_list.clear();
                 sample_list.addAll(sampleEntities);
 
-                System.out.println("xxx_size"+sample_list.size());
+                System.out.println("xxx_size" + sample_list.size());
 
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        sampleEntityView = sample_list.get(0);
-                        local_sample_id = sampleEntityView.getLocalSampleId();
+                sampleEntityView = sample_list.get(0);
+                local_sample_id = sampleEntityView.getLocalSampleId();
 
-                        for (int i=0;i<sampleEntityView.getFishtypes().size();i++){
+                for (int i = 0; i < sampleEntityView.getFishtypes().size(); i++) {
 
-                            ImageCapturePojo image_pojo = new ImageCapturePojo();
-                            image_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
+                    ImageCapturePojo image_pojo = new ImageCapturePojo();
+                    image_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
 
-                            imageCapture_list.add(image_pojo);
+                    imageCapture_list.add(image_pojo);
 
-                        }
+                }
 
-                        adapter = new ImageCaptureAdapter(getActivity(),imageCapture_list);
-                        adapter.setOnItemClickListener(CollectionStage_second.this::onItemImageClicked);
-                        recycler_image_capture.setAdapter(adapter);
-
-                    }
-                }, 3000);
-
-
-
-
+                adapter = new ImageCaptureAdapter(getActivity(), imageCapture_list);
+                adapter.setOnItemClickListener(CollectionStage_second.this::onItemImageClicked);
+                recycler_image_capture.setAdapter(adapter);
 
             }
         };
 
         sampleListViewModel = ViewModelProviders.of(this).get(SampleListViewModel.class);
-        sampleListViewModel.samplelist.observe(getActivity(),sampleObserver);
+        sampleListViewModel.samplelist.observe(getActivity(), sampleObserver);
 
     }
 }

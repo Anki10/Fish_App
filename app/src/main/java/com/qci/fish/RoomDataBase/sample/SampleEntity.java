@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.qci.fish.pojo.ImageCapturePojo;
+import com.qci.fish.pojo.QRCodeCapturePojo;
 import com.qci.fish.pojo.ResultCapturePojo;
 
 import java.util.ArrayList;
@@ -22,6 +23,9 @@ public class SampleEntity {
 
     @ColumnInfo(name = "Sample_Id")
     private String sampleid;
+
+    @ColumnInfo(name = "sample_number")
+    private String sample_number;
 
     @ColumnInfo(name = "Location_Name")
     private String locationname;
@@ -50,9 +54,6 @@ public class SampleEntity {
     @ColumnInfo(name = "Sample_available")
     private String sample_available;
 
-    @ColumnInfo(name = "Scanned_qrcode")
-    private String scanned_qrcode;
-
     @ColumnInfo(name = "Latitude")
     private String latitude;
 
@@ -65,6 +66,24 @@ public class SampleEntity {
 
     private ArrayList<ResultCapturePojo>resultCapture_list;
 
+    private ArrayList<QRCodeCapturePojo> QrCodeCapture_list;
+
+    public ArrayList<QRCodeCapturePojo> getQrCodeCapture_list() {
+        return QrCodeCapture_list;
+    }
+
+    public void setQrCodeCapture_list(ArrayList<QRCodeCapturePojo> qrCodeCapture_list) {
+        QrCodeCapture_list = qrCodeCapture_list;
+    }
+
+    public String getSample_number() {
+        return sample_number;
+    }
+
+    public void setSample_number(String sample_number) {
+        this.sample_number = sample_number;
+    }
+
     public ArrayList<ResultCapturePojo> getResultCapture_list() {
         return resultCapture_list;
     }
@@ -72,8 +91,6 @@ public class SampleEntity {
     public void setResultCapture_list(ArrayList<ResultCapturePojo> resultCapture_list) {
         this.resultCapture_list = resultCapture_list;
     }
-
-
 
     public ArrayList<ImageCapturePojo> getImageCapture_list() {
         return imageCapture_list;
@@ -90,7 +107,6 @@ public class SampleEntity {
     public void setFishtypes(ArrayList<SampleFishTypeList> fishtypes) {
         this.fishtypes = fishtypes;
     }
-
 
     public int getLocalSampleId() {
         return localSampleId;
@@ -186,14 +202,6 @@ public class SampleEntity {
 
     public void setSample_available(String sample_available) {
         this.sample_available = sample_available;
-    }
-
-    public String getScanned_qrcode() {
-        return scanned_qrcode;
-    }
-
-    public void setScanned_qrcode(String scanned_qrcode) {
-        this.scanned_qrcode = scanned_qrcode;
     }
 
     public String getLatitude() {

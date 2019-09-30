@@ -186,6 +186,8 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
         location_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //Setting the ArrayAdapter data on the Spinner
         sp_location_name.setAdapter(location_adapter);
+        sp_location_name.setSelected(false);
+        sp_location_name.setSelection(0,true);
         sp_location_name.setOnItemSelectedListener(this);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -194,9 +196,11 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //Setting the ArrayAdapter data on the Spinner
         location_fish_type.setAdapter(adapter);
+        location_fish_type.setSelected(false);
+        location_fish_type.setSelection(0,true);
         location_fish_type.setOnItemSelectedListener(this);
 
-        ed_sample_id_text.setText("QCI/FISHERIES/");
+    //    ed_sample_id_text.setText("QCI/FISHERIES/");
 
         sampleListViewModel = ViewModelProviders.of(this).get(SampleListViewModel.class);
 
@@ -269,9 +273,12 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                ed_sample_id_text.setText("QCI/FISHERIES/"+ab_location+"/"+charSequence);
+                if (charSequence.length() > 0){
+                    ed_sample_id_text.setText("QCI/FISHERIES/"+ab_location+"/"+charSequence);
 
-                sample_value = String.valueOf(charSequence);
+                    sample_value = String.valueOf(charSequence);
+                }
+
             }
 
             @Override
@@ -311,6 +318,7 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
         sampleEntityView.setLocationname(ab_location);
         sampleEntityView.setUnique_id(1);
         sampleEntityView.setSampleid(ed_sample_id_text.getText().toString());
+        sampleEntityView.setSample_number(ed_sample_id.getText().toString());
         sampleEntityView.setSamplecollectiondate_str(ed_sample_time.getText().toString());
         sampleEntityView.setSample_available(radio_status);
         sampleEntityView.setTruckno(ed_truck_number.getText().toString());
@@ -409,7 +417,7 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
                 ab_location = sp_location_name.getSelectedItem().toString();
 
                 if (!ab_location.equalsIgnoreCase("Select Location")){
-                    ed_sample_id_text.setText("QCI/FISHERIES/"+ab_location+"/"+sample_value);
+        //            ed_sample_id_text.setText("QCI/FISHERIES/"+ab_location+"/"+sample_value);
 
                 }
 
@@ -470,7 +478,7 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
             sp_location_name.setSelection(((ArrayAdapter<String>)sp_location_name.getAdapter()).getPosition(ab_location));
         }
         if (sampleEntity.getSampleid() != null){
-            ed_sample_id.setText(sampleEntity.getSampleid());
+            ed_sample_id_text.setText(sampleEntity.getSampleid());
 
             sample_value = sampleEntity.getSampleid();
         }
@@ -478,6 +486,9 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
             ed_sample_time.setText(sampleEntity.getSamplecollectiondate_str());
         }
 
+        if (sampleEntity.getSample_number() != null){
+            ed_sample_id.setText(sampleEntity.getSample_number());
+        }
         if (sampleEntity.getSample_available() != null){
             radio_status = sampleEntity.getSample_available();
            if (sampleEntity.getSample_available().equalsIgnoreCase("Yes")){
