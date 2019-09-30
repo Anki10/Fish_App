@@ -1,5 +1,10 @@
 package com.qci.fish.RoomDataBase.sample;
 
+import com.qci.fish.pojo.ImageCapturePojo;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
 public class SampleFishTypeList {
 
     private String fishtype;

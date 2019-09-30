@@ -117,11 +117,6 @@ public class WholeSaleSampleListActivity extends BaseActivity {
     }
 
     private void SampleView(SampleEntity sampleEntity){
-
-        if (sampleEntity.getResult() != null){
-            tv_sampleResult.setText(sampleEntity.getResult());
-        }
-
         if (sampleEntity.getLocationname() != null){
 
             tv_location_nameData.setText(sampleEntity.getLocationname());

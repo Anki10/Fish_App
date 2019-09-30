@@ -36,4 +36,6 @@
     <color name="transparent">#00000000</color>
 
     <color name="header_color">#6DB5CB</color>
+
+    <color name="bag_color">#D4D8DC</color>
 </resources>

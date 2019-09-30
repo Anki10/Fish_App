@@ -20,8 +20,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.qci.fish.RoomDataBase.sample.SampleEntity;
+import com.qci.fish.RoomDataBase.sample.SampleFishTypeList;
 import com.qci.fish.activity.SampleListActivity;
 import com.qci.fish.adapter.SampleAdapter;
+import com.qci.fish.pojo.ImageCapturePojo;
 import com.qci.fish.viewModel.SampleListViewModel;
 
 import java.io.File;
@@ -41,11 +43,16 @@ public class BaseFragment extends Fragment {
 
     public int local_sample_id;
 
+
+    public ArrayList<ImageCapturePojo>imageCapture_list;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         sample_list = new ArrayList<>();
+
+        imageCapture_list = new ArrayList<>();
 
      //   getList();
     }
@@ -58,11 +65,13 @@ public class BaseFragment extends Fragment {
                 sample_list.clear();
                 sample_list.addAll(sampleEntities);
 
+                System.out.println("xxx_size"+sample_list.size());
+
                 sampleEntityView = sample_list.get(0);
+
 
                 local_sample_id = sampleEntityView.getLocalSampleId();
 
-       //         System.out.println("xxx list"+sample_list);
 
             }
         };

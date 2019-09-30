@@ -39,6 +39,7 @@ import com.qci.fish.activity.SampleListActivity;
 import com.qci.fish.adapter.FishTypeAdapter;
 import com.qci.fish.adapter.SampleAdapter;
 import com.qci.fish.adapter.onItemFishClickListner;
+import com.qci.fish.pojo.ImageCapturePojo;
 import com.qci.fish.util.FormatConversionHelper;
 import com.qci.fish.viewModel.SampleListViewModel;
 import com.qci.fish.viewModel.SampleModel;
@@ -105,7 +106,7 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
      @BindView(R.id.recycler_fishtype)
     RecyclerView recycler_fishtype;
 
-     private List<SampleFishTypeList>fishtype_list;
+     private ArrayList<SampleFishTypeList>fishtype_list;
 
     private RecyclerView.LayoutManager mLayoutManager;
 
@@ -140,6 +141,8 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
 
     String sample_value;
 
+    public ArrayList<ImageCapturePojo>imageCapture_list;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -152,6 +155,7 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
         tv_title = (TextView) view.findViewById(R.id.tv_title);
         tv_count = (TextView) view.findViewById(R.id.tv_count);
 
+        imageCapture_list = new ArrayList<>();
         fishtype_list = new ArrayList<>();
 
         recycler_fishtype.setHasFixedSize(true);
@@ -315,6 +319,7 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
         sampleEntityView.setConsigneename(ed_consignee_name.getText().toString());
         sampleEntityView.setConsignmentno(ed_consignee_number.getText().toString());
         sampleEntityView.setFssai_fda_licenceno(ed_licence_number.getText().toString());
+
 
         sampleEntityView.setFishtypes(fishtype_list);
 

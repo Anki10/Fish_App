@@ -145,10 +145,6 @@ public class CollectionStage_fourth extends BaseFragment implements QRCodeReader
                 if (sampleEntity != null) {
 
                     sampleEntityView = sampleEntity;
-                    if (sampleEntityView.getResult() != null){
-                        qr_result = sampleEntityView.getScanned_qrcode();
-
-                    }
                 }
             }
         });

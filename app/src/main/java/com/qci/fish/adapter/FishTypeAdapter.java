@@ -60,8 +60,6 @@ public class FishTypeAdapter extends RecyclerView.Adapter<FishTypeAdapter.ViewHo
                 onItemFishClickListner.onItemClicked(position);
             }
         });
-
-
     }
 
     @Override

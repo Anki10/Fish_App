@@ -4,21 +4,21 @@ import androidx.room.TypeConverter;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.qci.fish.pojo.ImageCapturePojo;
+import com.qci.fish.pojo.ResultCapturePojo;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-public class TypeConverator {
+public class ResultConverator {
 
     @TypeConverter
-    public static ArrayList<SampleFishTypeList> fromString(String value) {
-        Type listType = new TypeToken<ArrayList<SampleFishTypeList>>() {}.getType();
+    public static ArrayList<ResultCapturePojo> fromString(String value) {
+        Type listType = new TypeToken<ArrayList<ResultCapturePojo>>() {}.getType();
         return new Gson().fromJson(value, listType);
     }
     @TypeConverter
-    public static String fromArrayLisr(ArrayList<SampleFishTypeList> list) {
+    public static String fromArrayLisr(ArrayList<ResultCapturePojo> list) {
         Gson gson = new Gson();
         String json = gson.toJson(list);
         return json;

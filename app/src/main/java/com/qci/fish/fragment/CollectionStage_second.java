@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,13 +32,20 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.qci.fish.R;
 import com.qci.fish.RoomDataBase.sample.SampleEntity;
+import com.qci.fish.RoomDataBase.sample.SampleFishTypeList;
 import com.qci.fish.RoomDataBase.sampleImage.SampleImageEntity;
 import com.qci.fish.activity.SampleListActivity;
+import com.qci.fish.adapter.FishTypeAdapter;
+import com.qci.fish.adapter.ImageCaptureAdapter;
+import com.qci.fish.adapter.OnItemImageClickListner;
+import com.qci.fish.pojo.ImageCapturePojo;
 import com.qci.fish.viewModel.SampleImageViewModel;
 import com.qci.fish.viewModel.SampleListViewModel;
 import com.qci.fish.viewModel.SampleModel;
@@ -56,7 +64,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CollectionStage_second extends BaseFragment {
+public class CollectionStage_second extends BaseFragment implements OnItemImageClickListner {
 
     TextView tv_title,tv_count;
 
@@ -64,30 +72,14 @@ public class CollectionStage_second extends BaseFragment {
     private Uri picUri;
     private File imageF;
 
-    @BindView(R.id.llImageCollection1)
-    LinearLayout llImageCollection1;
-
-    @BindView(R.id.llImageCollection2)
-    LinearLayout llImageCollection2;
-
-    @BindView(R.id.llImageCollection3)
-    LinearLayout llImageCollection3;
-
-
-
-    @BindView(R.id.ivImageCollection1)
-    ImageView ivImageCollection1;
-
-    @BindView(R.id.ivImageCollection2)
-    ImageView ivImageCollection2;
-
-    @BindView( R.id.ivImageCollection3)
-    ImageView ivImageCollection3;
 
     private String imagepath_1,imagepath_2,imagepath_3;
 
     @BindView(R.id.btn_Image_submit)
     Button btn_Image_submit;
+
+    @BindView(R.id.recycler_image_capture)
+    RecyclerView recycler_image_capture;
 
     private SampleImageViewModel sampleImageViewModel;
 
@@ -100,7 +92,16 @@ public class CollectionStage_second extends BaseFragment {
     private String click_type;
 
 
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    private ImageCaptureAdapter adapter;
+
+
     private SampleListViewModel sampleListViewModel;
+
+
+
+    private int list_pos;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,8 +118,9 @@ public class CollectionStage_second extends BaseFragment {
 
         click_type = getArguments().getString("click_type");
 
+
         if (click_type.equalsIgnoreCase("first")){
-            getList();
+            getMainList();
         }else {
             SampleGetData(local_id);
         }
@@ -130,39 +132,24 @@ public class CollectionStage_second extends BaseFragment {
         tv_title.setText("Capture Photos");
         tv_count.setText("2/4 >");
 
+        recycler_image_capture.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        recycler_image_capture.setLayoutManager(mLayoutManager);
+
+
 
         return view;
 
     }
 
-    @OnClick({R.id.llImageCollection1,R.id.llImageCollection2,R.id.llImageCollection3,R.id.btn_Image_submit})
+    @OnClick({R.id.btn_Image_submit})
     public void onViewClicked(View view){
      switch (view.getId()){
-         case R.id.llImageCollection1:
-             captureImage(1);
-             break;
-
-         case R.id.llImageCollection2:
-             if (imagepath_1 != null){
-              captureImage(2);
-             }else {
-                 Toast.makeText(getActivity(),"Please Capture first image before capture second image ",Toast.LENGTH_LONG).show();
-             }
-             break;
-
-         case R.id.llImageCollection3:
-               if (imagepath_1 != null && imagepath_2 != null){
-               captureImage(3);
-               }else {
-                   Toast.makeText(getActivity(),"Please Capture first and second image before capture third image ",Toast.LENGTH_LONG).show();
-               }
-             break;
-
          case R.id.btn_Image_submit:
 
-             sampleEntityView.setLocal_image_path1(imagepath_1);
-             sampleEntityView.setLocal_image_path2(imagepath_2);
-             sampleEntityView.setLocal_image_path3(imagepath_3);
+
+             sampleEntityView.setImageCapture_list(imageCapture_list);
 
              sampleListViewModel.UpdateSample(sampleEntityView);
 
@@ -179,8 +166,6 @@ public class CollectionStage_second extends BaseFragment {
              break;
       }
     }
-
-
 
 
     private void captureImage(int CAMERA_REQUEST) {
@@ -241,32 +226,26 @@ public class CollectionStage_second extends BaseFragment {
                     Uri uri = picUri;
                     imagepath_1 = compressImage(uri.toString());
 
-                    try {
-                        Glide.with(getActivity()).load(imagepath_1)
-                                //           .thumbnail(0.5f)
-                                .crossFade()
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(ivImageCollection1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                    ImageCapturePojo image_pojo = imageCapture_list.get(list_pos);
+                    image_pojo.setLocal_image_path1(imagepath_1);
 
+                    imageCapture_list.set(list_pos,image_pojo);
+
+                    adapter.notifyDataSetChanged();
+
+                }
             }
             else if (requestCode == 2) {
                 if (picUri != null) {
                     Uri uri = picUri;
                     imagepath_2 = compressImage(uri.toString());
 
-                    try {
-                        Glide.with(getActivity()).load(imagepath_2)
-                                //           .thumbnail(0.5f)
-                                .crossFade()
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(ivImageCollection2);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    ImageCapturePojo image_pojo2 = imageCapture_list.get(list_pos);
+                    image_pojo2.setLocal_image_path2(imagepath_2);
+
+                    imageCapture_list.set(list_pos,image_pojo2);
+
+                    adapter.notifyDataSetChanged();
                 }
 
             }
@@ -275,21 +254,17 @@ public class CollectionStage_second extends BaseFragment {
                     Uri uri = picUri;
                     imagepath_3 = compressImage(uri.toString());
 
-                    try {
-                        Glide.with(getActivity()).load(imagepath_3)
-                                //           .thumbnail(0.5f)
-                                .crossFade()
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(ivImageCollection3);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    ImageCapturePojo image_pojo3 = imageCapture_list.get(list_pos);
+                    image_pojo3.setLocal_image_path3(imagepath_3);
+
+                    imageCapture_list.set(list_pos,image_pojo3);
+
+                    adapter.notifyDataSetChanged();
+
                 }
             }
         }
     }
-
-    //
 
 
     private void SampleGetData(int localSampleId){
@@ -304,45 +279,79 @@ public class CollectionStage_second extends BaseFragment {
             public void onChanged(SampleEntity sampleEntity) {
                 if (sampleEntity != null){
                     sampleEntityView = sampleEntity;
-                    if (sampleEntity.getLocal_image_path1() != null){
-                        try {
-                            imagepath_1 = sampleEntity.getLocal_image_path1();
-                            Glide.with(getActivity()).load(imagepath_1)
-                                    //           .thumbnail(0.5f)
-                                    .crossFade()
-                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                    .into(ivImageCollection1);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (sampleEntity.getLocal_image_path2() != null){
-                        try {
-                            imagepath_2 = sampleEntity.getLocal_image_path2();
-                            Glide.with(getActivity()).load(imagepath_2)
-                                    //           .thumbnail(0.5f)
-                                    .crossFade()
-                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                    .into(ivImageCollection2);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (sampleEntity.getLocal_image_path3() != null){
-                        try {
-                            imagepath_3 = sampleEntity.getLocal_image_path3();
-                            Glide.with(getActivity()).load(imagepath_3)
-                                    //           .thumbnail(0.5f)
-                                    .crossFade()
-                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                    .into(ivImageCollection3);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+
+                    imageCapture_list = sampleEntityView.getImageCapture_list();
+
+                    adapter = new ImageCaptureAdapter(getActivity(),imageCapture_list);
+                    adapter.setOnItemClickListener(CollectionStage_second.this::onItemImageClicked);
+                    recycler_image_capture.setAdapter(adapter);
                 }
             }
         });
     }
 
+    @Override
+    public void onItemImageClicked(int from, int pos) {
+        list_pos = pos;
+        if (from == 1){
+            captureImage(1);
+        }else if(from == 2){
+            if (imageCapture_list.get(list_pos).getLocal_image_path1() != null){
+                captureImage(2);
+            }else {
+                Toast.makeText(getActivity(),"Please Capture first image before capture second image ",Toast.LENGTH_LONG).show();
+            }
+        }else if (from == 3){
+            if (imageCapture_list.get(list_pos).getLocal_image_path1() != null && imageCapture_list.get(list_pos).getLocal_image_path2() != null){
+                captureImage(3);
+            }else {
+                Toast.makeText(getActivity(),"Please Capture first and second image before capture third image ",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void getMainList(){
+
+        Observer<List<SampleEntity>> sampleObserver = new Observer<List<SampleEntity>>() {
+            @Override
+            public void onChanged(List<SampleEntity> sampleEntities) {
+                sample_list.clear();
+                sample_list.addAll(sampleEntities);
+
+                System.out.println("xxx_size"+sample_list.size());
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sampleEntityView = sample_list.get(0);
+                        local_sample_id = sampleEntityView.getLocalSampleId();
+
+                        for (int i=0;i<sampleEntityView.getFishtypes().size();i++){
+
+                            ImageCapturePojo image_pojo = new ImageCapturePojo();
+                            image_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
+
+                            imageCapture_list.add(image_pojo);
+
+                        }
+
+                        adapter = new ImageCaptureAdapter(getActivity(),imageCapture_list);
+                        adapter.setOnItemClickListener(CollectionStage_second.this::onItemImageClicked);
+                        recycler_image_capture.setAdapter(adapter);
+
+                    }
+                }, 3000);
+
+
+
+
+
+            }
+        };
+
+        sampleListViewModel = ViewModelProviders.of(this).get(SampleListViewModel.class);
+        sampleListViewModel.samplelist.observe(getActivity(),sampleObserver);
+
+    }
 }

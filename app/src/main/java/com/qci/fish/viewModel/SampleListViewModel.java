@@ -26,19 +26,19 @@ public class SampleListViewModel extends AndroidViewModel {
     }
 
 
-    public void addSample(SampleEntity sampleEntity,int req_id){
-        sampleRepository.addSampleData(sampleEntity,req_id);
+    public void addSample(SampleEntity sampleEntity, int req_id) {
+        sampleRepository.addSampleData(sampleEntity, req_id);
     }
 
-    public void UpdateSample(SampleEntity sampleEntity){
+    public void UpdateSample(SampleEntity sampleEntity) {
         sampleRepository.UpdateSampleData(sampleEntity);
     }
 
-    public void getSampleById(int sample_id){
+    public void getSampleById(int sample_id) {
         sampleRepository.getSampleId(sample_id);
     }
 
-    public void deleteSample(SampleEntity sampleEntity){
+    public void deleteSample(SampleEntity sampleEntity) {
         sampleRepository.DeleteSample(sampleEntity);
     }
 }

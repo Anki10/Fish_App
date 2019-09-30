@@ -8,201 +8,20 @@
         android:id="@+id/app_bar"
         layout="@layout/app_bar" />
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_image_capture"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:id="@+id/llImageCollection1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/grey_layout_border"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="150dp"
-                android:layout_height="100dp"
-                android:gravity="center">
-
-                <ImageView
-                    android:id="@+id/ivImageCollection1"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_image_black_24dp" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_bag"
-                android:gravity="center">
-
-            <!--    <ImageView
-                    android:id="@+id/ivImageCollection1Status"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:src="@drawable/add" />-->
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="2dp"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorBlack"
-                    android:text="Add Image"/>
-            </RelativeLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/llImageCollection2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/grey_layout_border"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="150dp"
-                android:layout_height="100dp"
-                android:gravity="center">
-
-                <ImageView
-                    android:id="@+id/ivImageCollection2"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_image_black_24dp" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_bag"
-                android:gravity="center">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="2dp"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorBlack"
-                    android:text="Add Image"/>
-            </RelativeLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
-
-        <LinearLayout
-            android:id="@+id/llImageCollection3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/grey_layout_border"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="150dp"
-                android:layout_height="100dp"
-                android:gravity="center">
-
-                <ImageView
-                    android:id="@+id/ivImageCollection3"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_image_black_24dp" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_bag"
-                android:gravity="center">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="2dp"
-                    android:textSize="16sp"
-                    android:textColor="@color/colorBlack"
-                    android:text="Add Image"/>
-            </RelativeLayout>
-
-        </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/llImageCollection4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_margin="10dp"
-                android:visibility="invisible"
-                android:background="@drawable/grey_layout_border"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:layout_width="150dp"
-                    android:layout_height="100dp"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:id="@+id/ivImageCollection4"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_image_black_24dp" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_bag"
-                    android:gravity="center">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        android:textSize="18sp"
-                        android:textColor="@color/colorBlack"
-                        android:text="Add Image"/>
-                </RelativeLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </LinearLayout>
     <Button
         android:id="@+id/btn_Image_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/curve_yellow_button"
         android:paddingLeft="50dp"
         android:paddingRight="50dp"

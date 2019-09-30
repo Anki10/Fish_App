@@ -7,14 +7,16 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import com.qci.fish.RoomDataBase.sample.ImageTypeConverator;
+import com.qci.fish.RoomDataBase.sample.ResultConverator;
 import com.qci.fish.RoomDataBase.sample.SampleDao;
 import com.qci.fish.RoomDataBase.sample.SampleEntity;
 import com.qci.fish.RoomDataBase.sample.TypeConverator;
 import com.qci.fish.RoomDataBase.sampleImage.SampleImageDao;
 import com.qci.fish.RoomDataBase.sampleImage.SampleImageEntity;
 
-@Database(entities = {SampleEntity.class, SampleImageEntity.class}, version = 2)
-@TypeConverters({TypeConverator.class})
+@Database(entities = {SampleEntity.class, SampleImageEntity.class}, version = 3)
+@TypeConverters({TypeConverator.class, ImageTypeConverator.class, ResultConverator.class})
 public abstract class AppDataBase extends RoomDatabase {
 
   public static final String DATABASE_NAME = "fishApp.db";

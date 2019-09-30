@@ -16,13 +16,13 @@ public class SampleModel extends AndroidViewModel {
     public LiveData<SampleEntity> sampleEntityLiveData;
 
 
-    public SampleModel(@NonNull Application application,SampleRepository sampleRepository, int sampleId) {
+    public SampleModel(@NonNull Application application, SampleRepository sampleRepository, int sampleId) {
         super(application);
 
         sampleEntityLiveData = sampleRepository.getSampleId(sampleId);
     }
 
-    public LiveData<SampleEntity> getObservableSample(){
+    public LiveData<SampleEntity> getObservableSample() {
         return sampleEntityLiveData;
     }
 
