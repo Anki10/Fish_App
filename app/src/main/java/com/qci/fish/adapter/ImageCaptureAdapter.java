@@ -70,7 +70,7 @@ public class ImageCaptureAdapter extends RecyclerView.Adapter<ImageCaptureAdapte
             }
         });
 
-        holder.tv_row_fish_name.setText(imageCapture_list.get(position).getFish_name());
+        holder.tv_row_fish_name.setText("Fish Name :- "+imageCapture_list.get(position).getFishtype());
 
         try {
             if (imageCapture_list.get(position).getLocal_image_path1().length() > 0){

@@ -1,6 +1,8 @@
 package com.qci.fish.fragment;
 
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
@@ -9,7 +11,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +25,19 @@ import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.qci.fish.R;
 import com.qci.fish.RoomDataBase.sample.SampleEntity;
 import com.qci.fish.RoomDataBase.sample.SampleFishTypeList;
+import com.qci.fish.activity.QRCodeScanActivity;
 import com.qci.fish.activity.SampleListActivity;
+import com.qci.fish.adapter.OnItemQRClickListner;
+import com.qci.fish.adapter.QRCodeCaptureAdapter;
+import com.qci.fish.adapter.ResultCaptureAdapter;
+import com.qci.fish.pojo.QRCodeCapturePojo;
+import com.qci.fish.pojo.ResultCapturePojo;
+import com.qci.fish.util.AppDialog;
 import com.qci.fish.viewModel.SampleListViewModel;
 import com.qci.fish.viewModel.SampleModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,16 +45,17 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CollectionStage_fourth extends BaseFragment implements QRCodeReaderView.OnQRCodeReadListener {
+public class CollectionStage_fourth extends BaseFragment implements OnItemQRClickListner {
 
     private View view;
-
-    private static QRCodeReaderView qrCodeReaderView;
 
     TextView tv_title,tv_count;
 
     @BindView(R.id.btn_Image_submit)
     Button btn_Image_submit;
+
+    @BindView(R.id.recycler_qrCode)
+    RecyclerView recycler_qrCode;
 
     private int local_id;
 
@@ -50,6 +66,14 @@ public class CollectionStage_fourth extends BaseFragment implements QRCodeReader
     private String qr_result;
 
     private SampleListViewModel sampleListViewModel;
+
+    private ArrayList<QRCodeCapturePojo> QRCode_list;
+
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    private QRCodeCaptureAdapter adapter;
+
+    private ProgressDialog pd;
 
 
     public CollectionStage_fourth() {
@@ -71,7 +95,14 @@ public class CollectionStage_fourth extends BaseFragment implements QRCodeReader
         tv_title.setText("Sample Qr scan");
         tv_count.setText("4/4 >");
 
+        recycler_qrCode.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        recycler_qrCode.setLayoutManager(mLayoutManager);
+
         sampleListViewModel = ViewModelProviders.of(this).get(SampleListViewModel.class);
+
+        QRCode_list = new ArrayList<>();
 
         // local_id
         local_id = getArguments().getInt("local_id");
@@ -79,7 +110,15 @@ public class CollectionStage_fourth extends BaseFragment implements QRCodeReader
         click_type = getArguments().getString("click_type");
 
         if (click_type.equalsIgnoreCase("first")){
-            getList();
+            pd = AppDialog.showLoading(getActivity());
+            pd.setCanceledOnTouchOutside(false);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getMainList();
+                }
+            }, 2000);
         }else {
             SampleGetData(local_id);
         }
@@ -87,51 +126,18 @@ public class CollectionStage_fourth extends BaseFragment implements QRCodeReader
         btn_Image_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* Intent intent = new Intent(getActivity(), SampleListActivity.class);
-                startActivity(intent);*/
+
+                sampleEntityView.setFishtype_qrcode(QRCode_list);
+
+                sampleListViewModel.UpdateSample(sampleEntityView);
+
                 getActivity().finish();
             }
         });
-
-        qrCodeReaderView = (QRCodeReaderView) view.findViewById(R.id.qrdecoderview);
-        qrCodeReaderView.setOnQRCodeReadListener(this);
-
-        // Use this function to enable/disable decoding
-        qrCodeReaderView.setQRDecodingEnabled(true);
-
-        // Use this function to change the autofocus interval (default is 5 secs)
-        qrCodeReaderView.setAutofocusInterval(1000);
-
-        // Use this function to enable/disable Torch
-        qrCodeReaderView.setTorchEnabled(true);
-
-        // Use this function to set front camera preview
-        qrCodeReaderView.setFrontCamera();
-
-        // Use this function to set back camera preview
-        qrCodeReaderView.setBackCamera();
-
         return view;
     }
 
-    @Override
-    public void onQRCodeRead(String text, PointF[] points) {
 
-        qr_result = text;
-
-        sampleEntityView.setScanned_qrcode(qr_result);
-        sampleListViewModel.UpdateSample(sampleEntityView);
-
-        getActivity().finish();
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        qrCodeReaderView.startCamera();
-    }
 
     private void SampleGetData(int localSampleId){
 
@@ -145,8 +151,85 @@ public class CollectionStage_fourth extends BaseFragment implements QRCodeReader
                 if (sampleEntity != null) {
 
                     sampleEntityView = sampleEntity;
+
+                    if (sampleEntityView.getFishtype_qrcode()!=  null){
+                        QRCode_list = sampleEntity.getFishtype_qrcode();
+                    }else {
+                        for (int i=0;i<sampleEntityView.getFishtypes().size();i++){
+
+                            QRCodeCapturePojo result_pojo = new QRCodeCapturePojo();
+                            result_pojo.setFishtype(sampleEntityView.getFishtypes().get(i).getFishtype());
+
+                            QRCode_list.add(result_pojo);
+                        }
+                    }
+
+                    adapter = new QRCodeCaptureAdapter(getActivity(),QRCode_list);
+                    adapter.setItemQRClickListner(CollectionStage_fourth.this::onItemQRClicked);
+                    recycler_qrCode.setAdapter(adapter);
                 }
             }
         });
+    }
+
+    private void getMainList(){
+
+        Observer<List<SampleEntity>> sampleObserver = new Observer<List<SampleEntity>>() {
+            @Override
+            public void onChanged(List<SampleEntity> sampleEntities) {
+                sample_list.clear();
+                sample_list.addAll(sampleEntities);
+
+                System.out.println("xxx_size"+sample_list.size());
+
+                sampleEntityView = sample_list.get(0);
+                local_sample_id = sampleEntityView.getLocalSampleId();
+
+
+                for (int i=0;i<sampleEntityView.getFishtypes().size();i++){
+
+                    QRCodeCapturePojo result_pojo = new QRCodeCapturePojo();
+                    result_pojo.setFishtype(sampleEntityView.getFishtypes().get(i).getFishtype());
+
+                    QRCode_list.add(result_pojo);
+
+                }
+
+                pd.cancel();
+                adapter = new QRCodeCaptureAdapter(getActivity(),QRCode_list);
+                adapter.setItemQRClickListner(CollectionStage_fourth.this::onItemQRClicked);
+                recycler_qrCode.setAdapter(adapter);
+
+            }
+        };
+
+        sampleListViewModel = ViewModelProviders.of(this).get(SampleListViewModel.class);
+        sampleListViewModel.samplelist.observe(getActivity(),sampleObserver);
+
+    }
+
+    @Override
+    public void onItemQRClicked(int pos) {
+
+        Intent intent = new Intent(getActivity(), QRCodeScanActivity.class);
+        startActivityForResult(intent,pos);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK){
+
+            String QRText = data.getStringExtra("result");
+
+            QRCodeCapturePojo qrCodeCapturePojo = QRCode_list.get(requestCode);
+            qrCodeCapturePojo.setScanned_qrcode(QRText);
+
+            QRCode_list.set(requestCode,qrCodeCapturePojo);
+
+            adapter.notifyDataSetChanged();
+        }
     }
 }

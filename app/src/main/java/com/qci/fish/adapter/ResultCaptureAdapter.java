@@ -45,7 +45,7 @@ public class ResultCaptureAdapter extends RecyclerView.Adapter<ResultCaptureAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.tv_capture_fish_name.setText("Capture Result of Fish : "+result_list.get(position).getFish_name());
+        holder.tv_capture_fish_name.setText("Capture Result of Fish : "+result_list.get(position).getFishtype());
 
         if (result_list.get(position).getResult() != null){
             if (result_list.get(position).getResult().equalsIgnoreCase("negative")){

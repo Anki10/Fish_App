@@ -30,7 +30,7 @@ android {
     flavorDimensions "default"
     productFlavors {
         local {
-            buildConfigField("String", "BASE_URL", "\"http://52.66.213.181:5004/api/\"")
+            buildConfigField("String", "BASE_URL", "\"http://13.126.61.33:5002/api/\"")
         }
 
         live {

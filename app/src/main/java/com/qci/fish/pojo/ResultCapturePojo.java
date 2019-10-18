@@ -2,15 +2,15 @@ package com.qci.fish.pojo;
 
 public class ResultCapturePojo {
 
-    private String fish_name;
+    private String fishtype;
     private String result;
 
-    public String getFish_name() {
-        return fish_name;
+    public String getFishtype() {
+        return fishtype;
     }
 
-    public void setFish_name(String fish_name) {
-        this.fish_name = fish_name;
+    public void setFishtype(String fishtype) {
+        this.fishtype = fishtype;
     }
 
     public String getResult() {

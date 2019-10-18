@@ -62,19 +62,39 @@ public class SampleEntity {
 
     private ArrayList<SampleFishTypeList> fishtypes;
 
-    private ArrayList<ImageCapturePojo> imageCapture_list;
+    private ArrayList<ImageCapturePojo> fishtype_pics;
 
-    private ArrayList<ResultCapturePojo>resultCapture_list;
+    private ArrayList<ResultCapturePojo>fishtype_results;
 
-    private ArrayList<QRCodeCapturePojo> QrCodeCapture_list;
+    private ArrayList<QRCodeCapturePojo> fishtype_qrcode;
 
-    public ArrayList<QRCodeCapturePojo> getQrCodeCapture_list() {
-        return QrCodeCapture_list;
+    public ArrayList<ImageCapturePojo> getFishtype_pics() {
+        return fishtype_pics;
     }
 
-    public void setQrCodeCapture_list(ArrayList<QRCodeCapturePojo> qrCodeCapture_list) {
-        QrCodeCapture_list = qrCodeCapture_list;
+    public void setFishtype_pics(ArrayList<ImageCapturePojo> fishtype_pics) {
+        this.fishtype_pics = fishtype_pics;
     }
+
+    public ArrayList<ResultCapturePojo> getFishtype_results() {
+        return fishtype_results;
+    }
+
+    public void setFishtype_results(ArrayList<ResultCapturePojo> fishtype_results) {
+        this.fishtype_results = fishtype_results;
+    }
+
+    public ArrayList<QRCodeCapturePojo> getFishtype_qrcode() {
+        return fishtype_qrcode;
+    }
+
+    public void setFishtype_qrcode(ArrayList<QRCodeCapturePojo> fishtype_qrcode) {
+        this.fishtype_qrcode = fishtype_qrcode;
+    }
+
+
+
+
 
     public String getSample_number() {
         return sample_number;
@@ -84,21 +104,6 @@ public class SampleEntity {
         this.sample_number = sample_number;
     }
 
-    public ArrayList<ResultCapturePojo> getResultCapture_list() {
-        return resultCapture_list;
-    }
-
-    public void setResultCapture_list(ArrayList<ResultCapturePojo> resultCapture_list) {
-        this.resultCapture_list = resultCapture_list;
-    }
-
-    public ArrayList<ImageCapturePojo> getImageCapture_list() {
-        return imageCapture_list;
-    }
-
-    public void setImageCapture_list(ArrayList<ImageCapturePojo> imageCapture_list) {
-        this.imageCapture_list = imageCapture_list;
-    }
 
     public ArrayList<SampleFishTypeList> getFishtypes() {
         return fishtypes;

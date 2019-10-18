@@ -337,15 +337,19 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
             sampleListViewModel.addSample(sampleEntityView,1);
         }
 
-        CollectionStage_second stage_second = new CollectionStage_second();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Bundle bundle = new Bundle();
-        bundle.putInt("local_id",sample_id);
-        bundle.putString("click_type",click_type);
-        stage_second.setArguments(bundle);
-        ft.replace(R.id.frame_layout,stage_second,"newFragment");
-        ft.addToBackStack("my_fragment");
-        ft.commit();
+        if (radio_status.equalsIgnoreCase("No")){
+            getActivity().finish();
+        }else {
+            CollectionStage_second stage_second = new CollectionStage_second();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            Bundle bundle = new Bundle();
+            bundle.putInt("local_id",sample_id);
+            bundle.putString("click_type",click_type);
+            stage_second.setArguments(bundle);
+            ft.replace(R.id.frame_layout,stage_second,"newFragment");
+            ft.addToBackStack("my_fragment");
+            ft.commit();
+        }
     }
 
     private boolean validateCheck(String status){
@@ -373,7 +377,9 @@ public class CollectionStage_first extends Fragment implements AdapterView.OnIte
                 Toast.makeText(getActivity(),"Please enter consignment number",Toast.LENGTH_LONG).show();
             }
             else if (ed_consignee_number.getText().toString().length() == 0){
-                Toast.makeText(getActivity(),"Please enter FSSAI/FDA licence",Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Please enter consignment number ",Toast.LENGTH_LONG).show();
+            }else if (ed_licence_number.getText().toString().length() == 0){
+                Toast.makeText(getActivity(),"Please enter FSSAI/FDA licence number",Toast.LENGTH_LONG).show();
             }
             else {
                 return true;

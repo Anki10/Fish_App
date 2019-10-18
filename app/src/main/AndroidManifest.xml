@@ -40,6 +40,9 @@
         <activity android:name=".activity.WholeSaleSampleListActivity"
             android:screenOrientation="portrait" />
 
+        <activity android:name=".activity.QRCodeScanActivity"
+            android:screenOrientation="portrait"/>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

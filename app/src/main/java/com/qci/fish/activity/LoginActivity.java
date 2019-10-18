@@ -73,11 +73,7 @@ public class LoginActivity extends BaseActivity {
             } else if (password.getText().toString().length() == 0){
                 Toast.makeText(LoginActivity.this,"Please enter the password",Toast.LENGTH_LONG).show();
             } else {
-          //    LoginApi();
-
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+             LoginApi();
             }
 
         } else {

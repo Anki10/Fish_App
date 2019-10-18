@@ -66,7 +66,6 @@ public class WholeSaleSampleListActivity extends BaseActivity {
 
     TextView tv_title;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,18 +117,14 @@ public class WholeSaleSampleListActivity extends BaseActivity {
 
     private void SampleView(SampleEntity sampleEntity){
         if (sampleEntity.getLocationname() != null){
-
             tv_location_nameData.setText(sampleEntity.getLocationname());
         }
         if (sampleEntity.getSampleid() != null){
             tv_sampleIdData.setText(sampleEntity.getSampleid());
-
         }
         if (sampleEntity.getSamplecollectiondate_str() != null){
             tv_collectionDataSet.setText(sampleEntity.getSamplecollectiondate_str());
         }
-
-
         if (sampleEntity.getTruckno() != null){
             tv_vehicle_number.setText(sampleEntity.getTruckno());
         }
@@ -149,5 +144,5 @@ public class WholeSaleSampleListActivity extends BaseActivity {
             tv_licence_number.setText(sampleEntity.getFssai_fda_licenceno());
         }
     }
-
 }
+

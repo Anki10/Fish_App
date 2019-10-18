@@ -1,8 +1,10 @@
 package com.qci.fish.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,7 @@ import com.qci.fish.adapter.ResultCaptureAdapter;
 import com.qci.fish.pojo.ImageCapturePojo;
 import com.qci.fish.pojo.ResultCapturePojo;
 import com.qci.fish.util.AppConstants;
+import com.qci.fish.util.AppDialog;
 import com.qci.fish.viewModel.SampleListViewModel;
 import com.qci.fish.viewModel.SampleModel;
 
@@ -67,6 +70,8 @@ public class CollectionStage_third extends BaseFragment implements OnItemResultC
 
     private int list_pos;
 
+    private ProgressDialog pd;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,7 +99,15 @@ public class CollectionStage_third extends BaseFragment implements OnItemResultC
         click_type = getArguments().getString("click_type");
 
         if (click_type.equalsIgnoreCase("first")){
-            getMainList();
+            pd = AppDialog.showLoading(getActivity());
+            pd.setCanceledOnTouchOutside(false);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getMainList();
+                }
+            }, 2000);
         }else {
             SampleGetData(local_id);
         }
@@ -106,7 +119,7 @@ public class CollectionStage_third extends BaseFragment implements OnItemResultC
             @Override
             public void onClick(View view) {
 
-                sampleEntityView.setResultCapture_list(result_list);
+                sampleEntityView.setFishtype_results(result_list);
                 sampleListViewModel.UpdateSample(sampleEntityView);
 
                 CollectionStage_fourth stage_fouth = new CollectionStage_fourth();
@@ -138,13 +151,13 @@ public class CollectionStage_third extends BaseFragment implements OnItemResultC
 
                     sampleEntityView = sampleEntity;
 
-                    if (sampleEntityView.getResultCapture_list() !=  null){
-                        result_list = sampleEntity.getResultCapture_list();
+                    if (sampleEntityView.getFishtype_results() !=  null){
+                        result_list = sampleEntity.getFishtype_results();
                     }else {
                         for (int i=0;i<sampleEntityView.getFishtypes().size();i++){
 
                             ResultCapturePojo result_pojo = new ResultCapturePojo();
-                            result_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
+                            result_pojo.setFishtype(sampleEntityView.getFishtypes().get(i).getFishtype());
 
                             result_list.add(result_pojo);
                         }
@@ -225,12 +238,13 @@ public class CollectionStage_third extends BaseFragment implements OnItemResultC
                 for (int i=0;i<sampleEntityView.getFishtypes().size();i++){
 
                     ResultCapturePojo result_pojo = new ResultCapturePojo();
-                    result_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
+                    result_pojo.setFishtype(sampleEntityView.getFishtypes().get(i).getFishtype());
 
                     result_list.add(result_pojo);
 
                 }
 
+                pd.cancel();
                 adapter = new ResultCaptureAdapter(getActivity(),result_list);
                 adapter.setOnItemResultClickListner(CollectionStage_third.this::onItemResultClicked);
                 recycler_result_capture.setAdapter(adapter);

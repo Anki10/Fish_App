@@ -1,6 +1,7 @@
 package com.qci.fish.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -23,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,7 @@ import com.qci.fish.adapter.FishTypeAdapter;
 import com.qci.fish.adapter.ImageCaptureAdapter;
 import com.qci.fish.adapter.OnItemImageClickListner;
 import com.qci.fish.pojo.ImageCapturePojo;
+import com.qci.fish.util.AppDialog;
 import com.qci.fish.viewModel.SampleImageViewModel;
 import com.qci.fish.viewModel.SampleListViewModel;
 import com.qci.fish.viewModel.SampleModel;
@@ -100,6 +103,8 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
 
     private int list_pos;
 
+    private ProgressDialog pd;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -117,14 +122,15 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
 
 
         if (click_type.equalsIgnoreCase("first")) {
+            pd = AppDialog.showLoading(getActivity());
+            pd.setCanceledOnTouchOutside(false);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     getMainList();
                 }
-            }, 3000);
-
+            }, 2000);
         } else {
             SampleGetData(local_id);
         }
@@ -141,7 +147,6 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
         mLayoutManager = new LinearLayoutManager(getActivity());
         recycler_image_capture.setLayoutManager(mLayoutManager);
 
-
         return view;
 
     }
@@ -151,8 +156,7 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
         switch (view.getId()) {
             case R.id.btn_Image_submit:
 
-
-                sampleEntityView.setImageCapture_list(imageCapture_list);
+                sampleEntityView.setFishtype_pics(imageCapture_list);
 
                 sampleListViewModel.UpdateSample(sampleEntityView);
 
@@ -281,13 +285,13 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                 if (sampleEntity != null) {
                     sampleEntityView = sampleEntity;
 
-                    if (sampleEntity.getImageCapture_list() != null) {
-                        imageCapture_list = sampleEntityView.getImageCapture_list();
+                    if (sampleEntity.getFishtype_pics() != null) {
+                        imageCapture_list = sampleEntityView.getFishtype_pics();
                     } else {
                         for (int i = 0; i < sampleEntityView.getFishtypes().size(); i++) {
 
                             ImageCapturePojo image_pojo = new ImageCapturePojo();
-                            image_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
+                            image_pojo.setFishtype(sampleEntityView.getFishtypes().get(i).getFishtype());
 
                             imageCapture_list.add(image_pojo);
 
@@ -337,11 +341,13 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                 for (int i = 0; i < sampleEntityView.getFishtypes().size(); i++) {
 
                     ImageCapturePojo image_pojo = new ImageCapturePojo();
-                    image_pojo.setFish_name(sampleEntityView.getFishtypes().get(i).getFishtype());
+                    image_pojo.setFishtype(sampleEntityView.getFishtypes().get(i).getFishtype());
 
                     imageCapture_list.add(image_pojo);
 
                 }
+
+                pd.cancel();
 
                 adapter = new ImageCaptureAdapter(getActivity(), imageCapture_list);
                 adapter.setOnItemClickListener(CollectionStage_second.this::onItemImageClicked);
