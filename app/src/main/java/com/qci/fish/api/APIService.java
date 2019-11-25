@@ -3,6 +3,7 @@ package com.qci.fish.api;
 
 
 import com.qci.fish.RoomDataBase.sample.SampleEntity;
+import com.qci.fish.pojo.ImageUploadResponse;
 import com.qci.fish.pojo.LoginRequest;
 import com.qci.fish.pojo.LoginResponse;
 import com.qci.fish.pojo.SampleSyncResponse;
@@ -29,6 +30,10 @@ public interface APIService {
 
     @PUT("sampleinfo_app")
     Call<SampleSyncResponse>DataSync(@Header("Content-Type") String Content_Type, @Header("Authorization") String Authorization, @Body SampleEntity pojo);
+
+    @Multipart
+    @POST("upload/s3")
+    Call<ImageUploadResponse>ImageUploadRequest(@Header("Authorization") String Authorization, @Part MultipartBody.Part file);
 
 
     @GET

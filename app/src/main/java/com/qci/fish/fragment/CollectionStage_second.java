@@ -3,6 +3,7 @@ package com.qci.fish.fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -47,8 +48,13 @@ import com.qci.fish.activity.SampleListActivity;
 import com.qci.fish.adapter.FishTypeAdapter;
 import com.qci.fish.adapter.ImageCaptureAdapter;
 import com.qci.fish.adapter.OnItemImageClickListner;
+import com.qci.fish.api.APIService;
+import com.qci.fish.api.ApiUtils;
 import com.qci.fish.pojo.ImageCapturePojo;
+import com.qci.fish.pojo.ImageUploadResponse;
+import com.qci.fish.util.AppConstants;
 import com.qci.fish.util.AppDialog;
+import com.qci.fish.util.ConnectionDetector;
 import com.qci.fish.viewModel.SampleImageViewModel;
 import com.qci.fish.viewModel.SampleListViewModel;
 import com.qci.fish.viewModel.SampleModel;
@@ -66,6 +72,12 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CollectionStage_second extends BaseFragment implements OnItemImageClickListner {
 
@@ -105,6 +117,12 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
 
     private ProgressDialog pd;
 
+    Boolean isInternetPresent = false;
+    // Connection detector class
+    ConnectionDetector cd;
+
+    private APIService mAPIService;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -112,6 +130,12 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
         View view = inflater.inflate(R.layout.fragment_collectionstage_second, container, false);
 
         ButterKnife.bind(this, view);
+
+        cd = new ConnectionDetector(getActivity());
+        // get Internet status
+        isInternetPresent = cd.isConnectingToInternet();
+
+        mAPIService = ApiUtils.getAPIService();
 
         sampleListViewModel = ViewModelProviders.of(this).get(SampleListViewModel.class);
 
@@ -233,12 +257,7 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                     Uri uri = picUri;
                     imagepath_1 = compressImage(uri.toString());
 
-                    ImageCapturePojo image_pojo = imageCapture_list.get(list_pos);
-                    image_pojo.setLocal_image_path1(imagepath_1);
-
-                    imageCapture_list.set(list_pos, image_pojo);
-
-                    adapter.notifyDataSetChanged();
+                    UploadImage(imagepath_1,1);
 
                 }
             } else if (requestCode == 2) {
@@ -246,12 +265,7 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                     Uri uri = picUri;
                     imagepath_2 = compressImage(uri.toString());
 
-                    ImageCapturePojo image_pojo2 = imageCapture_list.get(list_pos);
-                    image_pojo2.setLocal_image_path2(imagepath_2);
-
-                    imageCapture_list.set(list_pos, image_pojo2);
-
-                    adapter.notifyDataSetChanged();
+                    UploadImage(imagepath_2,2);
                 }
 
             } else if (requestCode == 3) {
@@ -259,17 +273,73 @@ public class CollectionStage_second extends BaseFragment implements OnItemImageC
                     Uri uri = picUri;
                     imagepath_3 = compressImage(uri.toString());
 
-                    ImageCapturePojo image_pojo3 = imageCapture_list.get(list_pos);
-                    image_pojo3.setLocal_image_path3(imagepath_3);
-
-                    imageCapture_list.set(list_pos, image_pojo3);
-
-                    adapter.notifyDataSetChanged();
+                    UploadImage(imagepath_3,3);
 
                 }
             }
         }
     }
+
+    private void UploadImage(String image_path,int request_code){
+        File file = new File(image_path);
+
+        //pass it like this
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+// MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+
+        mAPIService.ImageUploadRequest("Bearer " + getFromPrefs(AppConstants.ACCESS_Token),body).enqueue(new Callback<ImageUploadResponse>() {
+            @Override
+            public void onResponse(Call<ImageUploadResponse> call, Response<ImageUploadResponse> response) {
+                if (response.body() != null){
+                    if (response.body().getSuccess()){
+
+                        if (request_code == 1){
+                            ImageCapturePojo image_pojo = imageCapture_list.get(list_pos);
+                            image_pojo.setLocal_image_path1(imagepath_1);
+                            image_pojo.setPic1(response.body().getMessage());
+
+                            imageCapture_list.set(list_pos, image_pojo);
+
+                            adapter.notifyDataSetChanged();
+                        }else if (request_code == 2){
+                            ImageCapturePojo image_pojo2 = imageCapture_list.get(list_pos);
+                            image_pojo2.setLocal_image_path2(imagepath_2);
+                            image_pojo2.setPic2(response.body().getMessage());
+
+                            imageCapture_list.set(list_pos, image_pojo2);
+
+                            adapter.notifyDataSetChanged();
+                        }else if (request_code == 3){
+                            ImageCapturePojo image_pojo3 = imageCapture_list.get(list_pos);
+                            image_pojo3.setLocal_image_path3(imagepath_3);
+                            image_pojo3.setPic3(response.body().getMessage());
+
+                            imageCapture_list.set(list_pos, image_pojo3);
+
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ImageUploadResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    public String getFromPrefs(String key) {
+        SharedPreferences prefs = getActivity().getSharedPreferences(AppConstants.PREF_NAME, getActivity().MODE_PRIVATE);
+        return prefs.getString(key, AppConstants.DEFAULT_VALUE);
+    }
+
 
 
     private void SampleGetData(int localSampleId) {
